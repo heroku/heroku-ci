@@ -26,7 +26,7 @@ function * getBranch () {
 }
 
 function * getCommitMessageTitleLine () {
-  const gitBranch = spawn('git', ['log', '-1', '--pretty=format:"%s"'])
+  const gitBranch = spawn('git', ['log', '-1', '--pretty=format:%s'])
 
   return new Promise((resolve, reject) => {
     gitBranch.on('error', reject)
