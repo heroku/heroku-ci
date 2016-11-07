@@ -1,12 +1,10 @@
 const cli = require('heroku-cli-util')
 const co = require('co')
 const api = require('../../lib/heroku-api')
-const Promise = require('bluebird')
 const TestRun = require('../../lib/test-run')
 
 function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
-  const pipelineID = coupling.pipeline.id
   return yield TestRun.displayAndExit(coupling.pipeline, context.args.number, { heroku })
 }
 
