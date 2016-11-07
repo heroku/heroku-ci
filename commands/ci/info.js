@@ -7,7 +7,7 @@ const TestRun = require('../../lib/test-run')
 function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipelineID = coupling.pipeline.id
-  return yield TestRun.display(coupling.pipeline, context.args.number, { heroku })
+  return yield TestRun.displayAndExit(coupling.pipeline, context.args.number, { heroku })
 }
 
 module.exports = {
