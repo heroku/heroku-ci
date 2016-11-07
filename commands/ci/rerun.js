@@ -2,9 +2,12 @@
 const cli = require('heroku-cli-util')
 const co = require('co')
 const CreateRun = require('../../lib/create-run')
+const TestRun = require('../../lib/test-run')
 
 function * rerun (context, heroku) {
-  return yield CreateRun.uploadArchiveAndCreateRun(context, heroku)
+  let { number, pipeline } = yield CreateRun.uploadArchiveAndCreateRun(context, heroku)
+  pipeline['name'] = 'sausages' //hardcoded for now
+  return yield TestRun.displayAndExit(pipeline, number, { heroku })
 }
 
 module.exports = {
