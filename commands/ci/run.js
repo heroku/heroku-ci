@@ -72,9 +72,10 @@ function* run (context, heroku) {
   const commitMessage = yield getCommitMessageTitleLine()
   const filePath = yield createArchive(ref)
   const source = yield createSource(heroku, context.app)
-  const upload = yield uploadArchive(source.source_blob.put_url, filePath)
 
-  const testRun = yield api.createTestRun(heroku, {
+  yield uploadArchive(source.source_blob.put_url, filePath)
+
+  yield api.createTestRun(heroku, {
     commit_branch: branch,
     commit_message: commitMessage,
     commit_sha: ref,
