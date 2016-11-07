@@ -18,6 +18,15 @@ function * getRef (branch) {
   })
 }
 
+function * getBranch () {
+  const gitBranch = spawn('git', ['symbolic-ref', '--short', 'HEAD'])
+
+  return new Promise((resolve, reject) => {
+    gitBranch.on('error', reject)
+    gitBranch.stdout.on('data', (data) => resolve(data.toString().trim()))
+  })
+}
+
 function * getCommitMessageTitleLine (ref) {
   const refArg = ref || ''
   const gitBranch = spawn('git', ['log', refArg, '-1', '--pretty=format:%s'])
@@ -59,7 +68,7 @@ function * uploadArchive (url, filePath) {
 }
 
 function * rerun (context, heroku) {
-  const branch = context.args.branch
+  const branch = context.args.branch || (yield getBranch())
   const ref = yield getRef(branch)
   const commitMessage = yield getCommitMessageTitleLine(branch)
   const coupling = yield api.pipelineCoupling(heroku, context.app)
