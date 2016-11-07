@@ -5,9 +5,9 @@ const TestRun = require('../../lib/test-run')
 
 function * run (context, heroku) {
   let { number, pipeline } = yield CreateRun.uploadArchiveAndCreateRun(context, heroku)
-  //TODO TestRun requires us to know the pipeline ID and name. Get that from
-  //somewhere
-  pipeline['name'] = 'sausages' //hardcoded for now
+  // TODO TestRun requires us to know the pipeline ID and name. Get that from
+  // somewhere
+  pipeline['name'] = 'sausages' // hardcoded for now
   return yield TestRun.displayAndExit(pipeline, number, { heroku })
 }
 

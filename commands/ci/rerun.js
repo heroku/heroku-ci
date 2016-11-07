@@ -6,7 +6,7 @@ const TestRun = require('../../lib/test-run')
 
 function * rerun (context, heroku) {
   let { number, pipeline } = yield CreateRun.uploadArchiveAndCreateRun(context, heroku)
-  pipeline['name'] = 'sausages' //hardcoded for now
+  pipeline['name'] = 'sausages' // hardcoded for now
   return yield TestRun.displayAndExit(pipeline, number, { heroku })
 }
 
