@@ -25,6 +25,14 @@ function * getBranch () {
   })
 }
 
+function * getCommitMessageTitleLine () {
+  const gitBranch = spawn('git', ['log', '-1', '--pretty=format:"%s"'])
+
+  return new Promise((resolve, reject) => {
+    gitBranch.on('error', reject)
+    gitBranch.stdout.on('data', (data) => resolve(data.toString().trim()))
+  })
+}
 
 function * createArchive (ref) {
   const tar = spawn('git', ['archive', '--format', 'tar.gz', ref])
@@ -61,13 +69,14 @@ function* run (context, heroku) {
   const pipeline = coupling.pipeline.id
   const ref = yield getRef()
   const branch = yield getBranch()
+  const commitMessage = yield getCommitMessageTitleLine()
   const filePath = yield createArchive(ref)
   const source = yield createSource(heroku, context.app)
   const upload = yield uploadArchive(source.source_blob.put_url, filePath)
 
   const testRun = yield api.createTestRun(heroku, {
     commit_branch: branch,
-    commit_message: 'yolo',
+    commit_message: commitMessage,
     commit_sha: ref,
     pipeline: pipeline,
     source_blob_url: source.source_blob.get_url
