@@ -64,7 +64,7 @@ function * uploadArchive (url, filePath) {
   })
 }
 
-function* run (context, heroku) {
+function * run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipeline = coupling.pipeline.id
   const ref = yield getRef()
