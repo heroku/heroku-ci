@@ -6,11 +6,11 @@ The CLI plugin for Heroku CI
 
 `heroku ci:list`, aliased as `heroku ci`
 
-Show information about the current CI setup.
+Show the statuses of the most recent test runs
 
 `heroku ci:info 123`
 
-Show the status of a specifi test run
+Show the status of a specific test run
 
 `heroku ci:watch`
 
