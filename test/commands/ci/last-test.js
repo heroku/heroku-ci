@@ -20,7 +20,7 @@ describe('heroku ci:last', function () {
   })
 
   describe('when pipeline has runs', function () {
-    it.skip('displays the results of the latest run', function () {
+    it('displays the results of the latest run', function () {
       run = [{ number: 251 }]
       let api = nock('https://api.heroku.com')
         .get(`/apps/${app}/pipeline-couplings`)
@@ -36,7 +36,7 @@ describe('heroku ci:last', function () {
   })
 
   describe('when pipeline does not have anuy runs', function () {
-    it('reports that there are no runs', function () {
+    it.skip('reports that there are no runs', function () {
       run = undefined
       let api = nock('https://api.heroku.com')
         .get(`/apps/${app}/pipeline-couplings`)
