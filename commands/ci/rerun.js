@@ -12,20 +12,29 @@ function * run (context, heroku) {
   let sourceTestRun
 
   if (context.args.number) {
-    sourceTestRun = yield api.testRun(heroku, pipeline.id, context.args.number)
-
+    sourceTestRun = yield cli.action(`Fetching test run #${context.args.number}`, co(function *() {
+      return yield api.testRun(heroku, pipeline.id, context.args.number)
+    }))
   } else {
-    sourceTestRun = yield api.latestTestRun(heroku, pipeline.id)
+    sourceTestRun = yield cli.action(`Fetching latest test run`, co(function *() {
+      return yield api.latestTestRun(heroku, pipeline.id)
+    }))
+    cli.log(`Rerunning test run #${sourceTestRun.number}...`)
   }
 
-  const source = yield CreateRun.prepareSource(sourceTestRun.commit_sha, context, heroku)
-  const testRun = yield api.createTestRun(heroku, {
-    commit_branch: sourceTestRun.commit_branch,
-    commit_message: sourceTestRun.commit_message,
-    commit_sha: sourceTestRun.commit_sha,
-    pipeline: pipeline.id,
-    source_blob_url: source.source_blob.get_url
-  })
+  const source = yield cli.action('Uploading source', co(function * () {
+    return yield CreateRun.prepareSource(sourceTestRun.commit_sha, context, heroku)
+  }))
+
+  const testRun = yield cli.action('Starting test run', co(function * () {
+    return yield api.createTestRun(heroku, {
+      commit_branch: sourceTestRun.commit_branch,
+      commit_message: sourceTestRun.commit_message,
+      commit_sha: sourceTestRun.commit_sha,
+      pipeline: pipeline.id,
+      source_blob_url: source.source_blob.get_url
+    })
+  }))
 
   return yield TestRun.displayAndExit(pipeline, testRun.number, { heroku })
 }

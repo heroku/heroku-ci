@@ -9,15 +9,19 @@ function * run (context, heroku) {
   const pipeline = coupling.pipeline
 
   const commit = yield CreateRun.readCommit('HEAD')
-  const source = yield CreateRun.prepareSource(commit.ref, context, heroku)
+  const source = yield cli.action('Uploading source', co(function * () {
+    return yield CreateRun.prepareSource(commit.ref, context, heroku)
+  }))
 
-  const testRun = yield api.createTestRun(heroku, {
-    commit_branch: commit.branch,
-    commit_message: commit.message,
-    commit_sha: commit.ref,
-    pipeline: pipeline.id,
-    source_blob_url: source.source_blob.get_url
-  })
+  const testRun = yield cli.action('Starting test run', co(function * () {
+    return yield api.createTestRun(heroku, {
+      commit_branch: commit.branch,
+      commit_message: commit.message,
+      commit_sha: commit.ref,
+      pipeline: pipeline.id,
+      source_blob_url: source.source_blob.get_url
+    })
+  }))
 
   return yield TestRun.displayAndExit(pipeline, testRun.number, { heroku })
 }
