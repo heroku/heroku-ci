@@ -81,4 +81,17 @@ describe('heroku-api', function () {
       api.done()
     })
   })
+
+  describe('#createSource', function () {
+    it('creates a source', function* () {
+      const source = { source_blob: { get_url: 'https://example.com/get', put_url: 'https://example.com/put' } }
+      const api = nock(`https://api.heroku.com`)
+        .post(`/sources`)
+        .reply(201, source)
+
+      const response = yield herokuAPI.createSource(new Heroku())
+      expect(response).to.deep.eq(source)
+      api.done()
+    })
+  })
 })
