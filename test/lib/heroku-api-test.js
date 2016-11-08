@@ -66,4 +66,19 @@ describe('heroku-api', function () {
       api.done()
     })
   })
+
+  describe('#latestTestRun', function () {
+    it('gets the latest test run given a pipeline', function* () {
+      const pipeline = '123-abc'
+      const testRuns = [{ number: 123 }, { number: 122 }]
+      const api = nock(`https://api.heroku.com`)
+        .get(`/pipelines/${pipeline}/test-runs`)
+        .matchHeader('Accept', 'application/vnd.heroku+json; version=3.ci')
+        .reply(200, testRuns)
+
+      const response = yield herokuAPI.latestTestRun(new Heroku(), pipeline)
+      expect(response).to.deep.eq(testRuns[0])
+      api.done()
+    })
+  })
 })
