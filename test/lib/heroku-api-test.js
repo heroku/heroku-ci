@@ -36,6 +36,21 @@ describe('heroku-api', function () {
     })
   })
 
+  describe('#githubArchiveLink', function () {
+    it('gets a GitHub archive link', function* () {
+      const { user, repository } = ['heroku', 'heroku-ci']
+      const ref = '123-abc'
+      const archiveLink = { archive_link: 'https://example.com' }
+      const api = nock(`https://kolkrabbi.herokuapp.com`)
+        .get(`/github/repos/${user}/${repository}/tarball/${ref}`)
+        .reply(200, archiveLink)
+
+      const response = yield herokuAPI.githubArchiveLink(new Heroku(), user, repository, ref)
+      expect(response).to.deep.eq(archiveLink)
+      api.done()
+    })
+  })
+
   describe('#testRun', function () {
     it('gets a test run given a pipeline and number', function* () {
       const pipeline = '123-abc'
