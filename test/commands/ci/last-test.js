@@ -9,6 +9,7 @@ describe('heroku ci:last', function () {
   let app, coupling
 
   beforeEach(function () {
+    cli.exit.mock()
     cli.mockConsole()
     app = '123-app'
 
@@ -36,7 +37,6 @@ describe('heroku ci:last', function () {
     })
   })
 
-  /*
   describe('when pipeline does not have anuy runs', function () {
     it('reports that there are no runs', function () {
       let api = nock('https://api.heroku.com')
@@ -51,5 +51,4 @@ describe('heroku ci:last', function () {
       })
     })
   })
-  */
 })
