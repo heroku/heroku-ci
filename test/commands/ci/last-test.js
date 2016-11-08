@@ -1,13 +1,9 @@
 /* eslint-env mocha */
 
-/*
 const nock = require('nock')
 const expect = require('chai').expect
-*/
 const cli = require('heroku-cli-util')
-/*
 const cmd = require('../../../commands/ci/last')
-*/
 
 describe('heroku ci:last', function () {
   let app, coupling
@@ -26,14 +22,6 @@ describe('heroku ci:last', function () {
 
   describe('when pipeline has runs', function () {
     it('displays the results of the latest run', function () {
-      app
-      coupling
-    })
-  })
-
-  /*
-  describe('when pipeline has runs', function () {
-    it('displays the results of the latest run', function () {
       let num = 1234
       let api = nock('https://api.heroku.com')
         .get(`/apps/${app}/pipeline-couplings`)
@@ -48,6 +36,7 @@ describe('heroku ci:last', function () {
     })
   })
 
+  /*
   describe('when pipeline does not have anuy runs', function () {
     it('reports that there are no runs', function () {
       let api = nock('https://api.heroku.com')
