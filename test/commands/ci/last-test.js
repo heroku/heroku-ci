@@ -3,12 +3,13 @@
 /*
 const nock = require('nock')
 const expect = require('chai').expect
+*/
 const cli = require('heroku-cli-util')
+/*
 const cmd = require('../../../commands/ci/last')
 */
 
 describe('heroku ci:last', function () {
-  /*
   let app, coupling
 
   beforeEach(function () {
@@ -23,6 +24,14 @@ describe('heroku ci:last', function () {
     }
   })
 
+  describe('when pipeline has runs', function () {
+    it('displays the results of the latest run', function () {
+      app
+      coupling
+    })
+  })
+
+  /*
   describe('when pipeline has runs', function () {
     it('displays the results of the latest run', function () {
       let num = 1234
