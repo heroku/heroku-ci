@@ -9,6 +9,7 @@ describe('heroku ci:last', function () {
   let app, coupling
 
   beforeEach(function () {
+    cli.exit.mock()
     cli.mockConsole()
     app = '123-app'
 
