@@ -6,7 +6,7 @@ const cli = require('heroku-cli-util')
 const cmd = require('../../../commands/ci/last')
 
 describe('heroku ci:last', function () {
-  let app, coupling, pipelineRepository, testRun
+  let app, coupling, run
 
   beforeEach(function () {
     cli.mockConsole()
@@ -14,26 +14,40 @@ describe('heroku ci:last', function () {
 
     coupling = {
       pipeline: {
-        id: '123-abc',
-        name: 'test-pipeline'
+        id: '123-abc'
       }
     }
-
-    runs = [{
-      number: 251
-    }]
   })
 
-  it('displays pipeline and repo info', function () {
-    const api = nock('https://api.heroku.com')
-      .get(`/apps/${app}/pipeline-couplings`)
-      .reply(200, coupling)
-      .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
-      .reply(200, runs)
+  describe('when pipeline has runs', function () {
+    it('displays the results of the latest run', function () {
+      run = { number: 251 }
+      let api = nock('https://api.heroku.com')
+        .get(`/apps/${app}/pipeline-couplings`)
+        .reply(200, coupling)
+        .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
+        .reply(200, run)
 
-    return cmd.run({ app }).then(() => {
-      expect(cli.stdout).to.contain(`=== Test run #${runs[0].number} setup`)
-      api.done()
+      return cmd.run({ app }).then(() => {
+        expect(cli.stdout).to.contain(`=== Test run #${run.number} setup`)
+        api.done()
+      })
+    })
+  })
+
+  describe('when pipeline does not have anuy runs', function () {
+    it('reports that there are no runs', function () {
+      run = undefined
+      let api = nock('https://api.heroku.com')
+        .get(`/apps/${app}/pipeline-couplings`)
+        .reply(200, coupling)
+        .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
+        .reply(200, run)
+
+      return cmd.run({ app }).then(() => {
+        expect(cli.stdout).to.contain('No Heroku CI runs found')
+        api.done()
+      })
     })
   })
 })
