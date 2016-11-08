@@ -37,6 +37,7 @@
     "co-wait": "0.0.0",
     "got": "^6.6.3",
     "heroku-cli-util": "^6.0.15",
+    "single-line-log": "^1.1.2",
     "temp": "^0.8.3"
   }
 }
