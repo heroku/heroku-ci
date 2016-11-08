@@ -21,7 +21,7 @@ describe('heroku ci:last', function () {
 
   describe('when pipeline has runs', function () {
     it('displays the results of the latest run', function () {
-      run = { number: 251 }
+      run = [{ number: 251 }]
       let api = nock('https://api.heroku.com')
         .get(`/apps/${app}/pipeline-couplings`)
         .reply(200, coupling)
@@ -29,7 +29,7 @@ describe('heroku ci:last', function () {
         .reply(200, run)
 
       return cmd.run({ app }).then(() => {
-        expect(cli.stdout).to.contain(`=== Test run #${run.number} setup`)
+        expect(cli.stdout).to.contain(`=== Test run #${run[0].number} setup`)
         api.done()
       })
     })
@@ -45,7 +45,7 @@ describe('heroku ci:last', function () {
         .reply(200, run)
 
       return cmd.run({ app }).then(() => {
-        expect(cli.stdout).to.contain('No Heroku CI runs found')
+        expect(cli.stderr).to.contain('No Heroku CI runs found')
         api.done()
       })
     })
