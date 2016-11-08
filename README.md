@@ -10,4 +10,8 @@ Show information about the current CI setup.
 
 `heroku ci:info 123`
 
-Show the status of a specifi test run
+Show the status of a specific test run
+
+`heroku ci:last`
+
+Show the status of the last test run
