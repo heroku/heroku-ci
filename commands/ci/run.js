@@ -1,13 +1,13 @@
 const cli = require('heroku-cli-util')
 const co = require('co')
+const api = require('../../lib/heroku-api')
 const CreateRun = require('../../lib/create-run')
 const TestRun = require('../../lib/test-run')
 
 function * run (context, heroku) {
-  let { number, pipeline } = yield CreateRun.uploadArchiveAndCreateRun(context, heroku)
-  // TODO TestRun requires us to know the pipeline ID and name. Get that from
-  // somewhere
-  pipeline['name'] = 'sausages' // hardcoded for now
+  const coupling = yield api.pipelineCoupling(heroku, context.app)
+  const pipeline = coupling.pipeline
+  let { number } = yield CreateRun.uploadArchiveAndCreateRun(pipeline, context, heroku)
   return yield TestRun.displayAndExit(pipeline, number, { heroku })
 }
 
