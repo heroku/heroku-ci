@@ -1,4 +1,5 @@
 test
+--require ./test/helpers.js
 --recursive
 -R dot
 -r co-mocha
