@@ -1,19 +1,20 @@
 const cli = require('heroku-cli-util')
 const co = require('co')
 const api = require('../../lib/heroku-api')
+const git = require('../../lib/git')
 const CreateRun = require('../../lib/create-run')
 const TestRun = require('../../lib/test-run')
 
-function * run (context, heroku) {
+function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipeline = coupling.pipeline
 
-  const commit = yield CreateRun.readCommit('HEAD')
-  const source = yield cli.action('Uploading source', co(function * () {
+  const commit = yield git.readCommit('HEAD')
+  const source = yield cli.action('Uploading source', co(function* () {
     return yield CreateRun.prepareSource(commit.ref, context, heroku)
   }))
 
-  const testRun = yield cli.action('Starting test run', co(function * () {
+  const testRun = yield cli.action('Starting test run', co(function* () {
     return yield api.createTestRun(heroku, {
       commit_branch: commit.branch,
       commit_message: commit.message,

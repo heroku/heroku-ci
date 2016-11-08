@@ -5,28 +5,28 @@ const api = require('../../lib/heroku-api')
 const CreateRun = require('../../lib/create-run')
 const TestRun = require('../../lib/test-run')
 
-function * run (context, heroku) {
+function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipeline = coupling.pipeline
 
   let sourceTestRun
 
   if (context.args.number) {
-    sourceTestRun = yield cli.action(`Fetching test run #${context.args.number}`, co(function *() {
+    sourceTestRun = yield cli.action(`Fetching test run #${context.args.number}`, co(function* () {
       return yield api.testRun(heroku, pipeline.id, context.args.number)
     }))
   } else {
-    sourceTestRun = yield cli.action(`Fetching latest test run`, co(function *() {
+    sourceTestRun = yield cli.action(`Fetching latest test run`, co(function* () {
       return yield api.latestTestRun(heroku, pipeline.id)
     }))
     cli.log(`Rerunning test run #${sourceTestRun.number}...`)
   }
 
-  const source = yield cli.action('Uploading source', co(function * () {
+  const source = yield cli.action('Uploading source', co(function* () {
     return yield CreateRun.prepareSource(sourceTestRun.commit_sha, context, heroku)
   }))
 
-  const testRun = yield cli.action('Starting test run', co(function * () {
+  const testRun = yield cli.action('Starting test run', co(function* () {
     return yield api.createTestRun(heroku, {
       commit_branch: sourceTestRun.commit_branch,
       commit_message: sourceTestRun.commit_message,
