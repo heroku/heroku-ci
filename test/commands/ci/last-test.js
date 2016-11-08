@@ -20,34 +20,30 @@ describe('heroku ci:last', function () {
     }
   })
 
-  describe('when pipeline has runs', function () {
-    it('displays the results of the latest run', function () {
-      let num = 1234
-      let api = nock('https://api.heroku.com')
-        .get(`/apps/${app}/pipeline-couplings`)
-        .reply(200, coupling)
-        .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
-        .reply(200, [{number: num}])
+  it('when pipeline has runs, displays the results of the latest run', function () {
+    let num = 1234
+    let api = nock('https://api.heroku.com')
+      .get(`/apps/${app}/pipeline-couplings`)
+      .reply(200, coupling)
+      .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
+      .reply(200, [{number: num}])
 
-      return cmd.run({ app }).then(() => {
-        expect(cli.stdout).to.contain(`=== Test run #${num} setup`)
-        api.done()
-      })
+    return cmd.run({ app }).then(() => {
+      expect(cli.stdout).to.contain(`=== Test run #${num} setup`)
+      api.done()
     })
   })
 
-  describe('when pipeline does not have anuy runs', function () {
-    it('reports that there are no runs', function () {
-      let api = nock('https://api.heroku.com')
-        .get(`/apps/${app}/pipeline-couplings`)
-        .reply(200, coupling)
-        .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
-        .reply(200, null)
+  it('when pipeline does not have any runs, reports that there are no runs', function () {
+    let api = nock('https://api.heroku.com')
+      .get(`/apps/${app}/pipeline-couplings`)
+      .reply(200, coupling)
+      .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
+      .reply(200, null)
 
-      return cmd.run({ app }).then(() => {
-        expect(cli.stderr).to.contain('No Heroku CI runs found')
-        api.done()
-      })
+    return cmd.run({ app }).then(() => {
+      expect(cli.stderr).to.contain('No Heroku CI runs found')
+      api.done()
     })
   })
 })
