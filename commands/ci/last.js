@@ -14,10 +14,7 @@ function* run (context, heroku) {
     return cli.error('No Heroku CI runs found for this pipeline.')
   }
 
-
-  /*
   return yield TestRun.display(pipeline, lastRun.number, { heroku })
-  */
 }
 
 module.exports = {
