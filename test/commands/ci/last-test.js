@@ -26,7 +26,7 @@ describe('heroku ci:last', function () {
         .get(`/apps/${app}/pipeline-couplings`)
         .reply(200, coupling)
         .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
-        .reply(200, undefined)
+        .reply(200, [])
 
       return cmd.run({ app }).then(() => {
         expect(cli.stderr).to.contain('No Heroku CI runs found')
