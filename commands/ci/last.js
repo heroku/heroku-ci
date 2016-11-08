@@ -7,14 +7,13 @@ function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipeline = coupling.pipeline
   const pipelineID = pipeline.id
-  const runs = yield api.testRuns(heroku, pipelineID)
+  const run = yield api.latestTestRun(heroku, pipelineID)
 
-  if (!runs[0]) {
+  if (!run) {
     return cli.error('No Heroku CI runs found for this pipeline.')
   }
 
-  const runNum = runs[0]['number']
-  return yield TestRun.displayAndExit(pipeline, runNum, { heroku })
+  return yield TestRun.displayAndExit(pipeline, run.number, { heroku })
 }
 
 module.exports = {
