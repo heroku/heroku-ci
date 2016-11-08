@@ -1,4 +1,5 @@
 /* eslint-env mocha */
+'use strict'
 
 const nock = require('nock')
 const expect = require('chai').expect

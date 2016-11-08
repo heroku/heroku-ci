@@ -1,3 +1,4 @@
+'use strict'
 const cli = require('heroku-cli-util')
 const co = require('co')
 const api = require('../../lib/heroku-api')
