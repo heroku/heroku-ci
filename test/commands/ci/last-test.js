@@ -5,7 +5,7 @@ const expect = require('chai').expect
 const cli = require('heroku-cli-util')
 const cmd = require('../../../commands/ci/last')
 
-describe.skip('heroku ci:last', function () {
+describe('heroku ci:last', function () {
   let app, coupling, run
 
   beforeEach(function () {
@@ -20,7 +20,7 @@ describe.skip('heroku ci:last', function () {
   })
 
   describe('when pipeline has runs', function () {
-    it('displays the results of the latest run', function () {
+    it.skip('displays the results of the latest run', function () {
       run = [{ number: 251 }]
       let api = nock('https://api.heroku.com')
         .get(`/apps/${app}/pipeline-couplings`)
