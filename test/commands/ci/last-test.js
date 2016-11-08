@@ -20,6 +20,21 @@ describe('heroku ci:last', function () {
     }
   })
 
+  describe('when pipeline does not have anuy runs', function () {
+    it('reports that there are no runs', function () {
+      let api = nock('https://api.heroku.com')
+        .get(`/apps/${app}/pipeline-couplings`)
+        .reply(200, coupling)
+        .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
+        .reply(200, undefined)
+
+      return cmd.run({ app }).then(() => {
+        expect(cli.stderr).to.contain('No Heroku CI runs found')
+        api.done()
+      })
+    })
+  })
+
   describe('when pipeline has runs', function () {
     it('displays the results of the latest run', function () {
       let num = 1234
@@ -35,19 +50,4 @@ describe('heroku ci:last', function () {
       })
     })
   })
-
-  // describe('when pipeline does not have anuy runs', function () {
-  //   it('reports that there are no runs', function () {
-  //     let api = nock('https://api.heroku.com')
-  //       .get(`/apps/${app}/pipeline-couplings`)
-  //       .reply(200, coupling)
-  //       .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
-  //       .reply(200, undefined)
-  //
-  //     return cmd.run({ app }).then(() => {
-  //       expect(cli.stderr).to.contain('No Heroku CI runs found')
-  //       api.done()
-  //     })
-  //   })
-  // })
 })
