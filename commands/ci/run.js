@@ -2,7 +2,7 @@ const cli = require('heroku-cli-util')
 const co = require('co')
 const api = require('../../lib/heroku-api')
 const git = require('../../lib/git')
-const CreateRun = require('../../lib/create-run')
+const source = require('../../lib/source')
 const TestRun = require('../../lib/test-run')
 
 function* run (context, heroku) {
@@ -10,8 +10,8 @@ function* run (context, heroku) {
   const pipeline = coupling.pipeline
 
   const commit = yield git.readCommit('HEAD')
-  const source = yield cli.action('Uploading source', co(function* () {
-    return yield CreateRun.prepareSource(commit.ref, context, heroku)
+  const sourceBlobUrl = yield cli.action('Preparing source', co(function* () {
+    return yield source.createSourceBlob(commit.ref, context, heroku)
   }))
 
   const testRun = yield cli.action('Starting test run', co(function* () {
@@ -20,7 +20,7 @@ function* run (context, heroku) {
       commit_message: commit.message,
       commit_sha: commit.ref,
       pipeline: pipeline.id,
-      source_blob_url: source.source_blob.get_url
+      source_blob_url: sourceBlobUrl
     })
   }))
 

@@ -2,7 +2,7 @@
 const cli = require('heroku-cli-util')
 const co = require('co')
 const api = require('../../lib/heroku-api')
-const CreateRun = require('../../lib/create-run')
+const source = require('../../lib/source')
 const TestRun = require('../../lib/test-run')
 
 function* run (context, heroku) {
@@ -22,8 +22,8 @@ function* run (context, heroku) {
     cli.log(`Rerunning test run #${sourceTestRun.number}...`)
   }
 
-  const source = yield cli.action('Uploading source', co(function* () {
-    return yield CreateRun.prepareSource(sourceTestRun.commit_sha, context, heroku)
+  const sourceBlobUrl = yield cli.action('Preparing source', co(function* () {
+    return yield source.createSourceBlob(sourceTestRun.commit_sha, context, heroku)
   }))
 
   const testRun = yield cli.action('Starting test run', co(function* () {
@@ -32,7 +32,7 @@ function* run (context, heroku) {
       commit_message: sourceTestRun.commit_message,
       commit_sha: sourceTestRun.commit_sha,
       pipeline: pipeline.id,
-      source_blob_url: source.source_blob.get_url
+      source_blob_url: sourceBlobUrl
     })
   }))
 
