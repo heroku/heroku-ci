@@ -4,6 +4,7 @@ const api = require('../../lib/heroku-api')
 const TestRun = require('../../lib/test-run')
 
 function* run (context, heroku) {
+  /*
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipeline = coupling.pipeline
   const pipelineID = pipeline.id
@@ -14,7 +15,9 @@ function* run (context, heroku) {
     return cli.error('No Heroku CI runs found for this pipeline.')
   }
 
+
   return yield TestRun.display(pipeline, lastRun.number, { heroku })
+  */
 }
 
 module.exports = {
