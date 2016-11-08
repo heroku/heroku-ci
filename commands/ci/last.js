@@ -7,7 +7,6 @@ function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipeline = coupling.pipeline
   const pipelineID = pipeline.id
-  /*
   let lastRun = yield api.latestTestRun(heroku, pipelineID)
   lastRun = lastRun || null
 
@@ -16,6 +15,7 @@ function* run (context, heroku) {
   }
 
 
+  /*
   return yield TestRun.display(pipeline, lastRun.number, { heroku })
   */
 }
