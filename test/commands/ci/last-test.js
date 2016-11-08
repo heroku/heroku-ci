@@ -6,7 +6,7 @@ const cli = require('heroku-cli-util')
 const cmd = require('../../../commands/ci/last')
 
 describe('heroku ci:last', function () {
-  let app, coupling, run
+  let app, coupling
 
   beforeEach(function () {
     cli.mockConsole()
@@ -20,16 +20,15 @@ describe('heroku ci:last', function () {
   })
 
   describe('when pipeline has runs', function () {
-    it.skip('displays the results of the latest run', function () {
-      run = [{ number: 251 }]
+    it('displays the results of the latest run', function () {
       let api = nock('https://api.heroku.com')
         .get(`/apps/${app}/pipeline-couplings`)
         .reply(200, coupling)
         .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
-        .reply(200, run)
+        .reply(200, [{ number: 251 }])
 
       return cmd.run({ app }).then(() => {
-        expect(cli.stdout).to.contain(`=== Test run #${run[0].number} setup`)
+        expect(cli.stdout).to.contain(`=== Test run #251 setup`)
         api.done()
       })
     })
@@ -37,12 +36,11 @@ describe('heroku ci:last', function () {
 
   describe('when pipeline does not have anuy runs', function () {
     it('reports that there are no runs', function () {
-      run = undefined
       let api = nock('https://api.heroku.com')
         .get(`/apps/${app}/pipeline-couplings`)
         .reply(200, coupling)
         .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
-        .reply(200, run)
+        .reply(200, undefined)
 
       return cmd.run({ app }).then(() => {
         expect(cli.stderr).to.contain('No Heroku CI runs found')
