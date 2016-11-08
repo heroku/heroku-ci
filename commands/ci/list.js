@@ -7,7 +7,8 @@ function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipelineID = coupling.pipeline.id
   const runs = yield api.testRuns(heroku, pipelineID)
-  return yield SingleLineLog.render(runs)
+
+  return SingleLineLog.render(runs)
 }
 
 module.exports = {
