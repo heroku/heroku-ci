@@ -14,7 +14,8 @@ describe('heroku ci:last', function () {
 
     coupling = {
       pipeline: {
-        id: '123-abc'
+        id: '123-abc',
+        name: '123-abc'
       }
     }
   })
