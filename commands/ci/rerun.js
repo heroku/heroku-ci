@@ -8,8 +8,19 @@ const TestRun = require('../../lib/test-run')
 function * run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipeline = coupling.pipeline
-  let { number }  = yield CreateRun.uploadArchiveAndCreateRun(pipeline, context, heroku)
-  return yield TestRun.displayAndExit(pipeline, number, { heroku })
+
+  const sourceTestRun = yield api.latestTestRun(heroku, pipeline.id)
+  const source = yield CreateRun.prepareSource(sourceTestRun.commit_sha, context, heroku)
+
+  const testRun = yield api.createTestRun(heroku, {
+    commit_branch: sourceTestRun.commit_branch,
+    commit_message: sourceTestRun.commit_message,
+    commit_sha: sourceTestRun.commit_sha,
+    pipeline: pipeline.id,
+    source_blob_url: source.source_blob.get_url
+  })
+
+  return yield TestRun.displayAndExit(pipeline, testRun.number, { heroku })
 }
 
 module.exports = {
