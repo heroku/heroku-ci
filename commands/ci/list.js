@@ -5,7 +5,6 @@ const RenderTestRuns = require('../../lib/render-test-runs')
 
 function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
-  const pipelineID = coupling.pipeline.id
 
   return yield RenderTestRuns.render(coupling.pipeline, { heroku, watch: context.flags.watch })
 }
