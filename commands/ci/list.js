@@ -1,14 +1,13 @@
 const cli = require('heroku-cli-util')
 const co = require('co')
 const api = require('../../lib/heroku-api')
-const SingleLineLog = require('../../lib/single-line-log')
+const RenderTestRuns = require('../../lib/render-test-runs')
 
 function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipelineID = coupling.pipeline.id
-  const runs = yield api.testRuns(heroku, pipelineID)
 
-  return SingleLineLog.render(runs)
+  return yield RenderTestRuns.render(coupling.pipeline, { heroku, watch: context.flags.watch })
 }
 
 module.exports = {
@@ -19,5 +18,14 @@ module.exports = {
   needsAuth: true,
   description: 'show the the most recent runs',
   help: 'display the most recent CI runs for the given pipeline',
+  flags: [
+    {
+      name: 'watch',
+      char: 'w',
+      hasValue: false,
+      description: 'keep running and watch for new and update tests'
+
+    }
+  ],
   run: cli.command(co.wrap(run))
 }
