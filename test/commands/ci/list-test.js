@@ -41,10 +41,10 @@ describe('heroku ci:list', function () {
     stdMocks.restore()
     const { stdout } = stdMocks.flush()
 
-    expect(stdout[2]).to.contain(runs[0].number)
-    expect(stdout[2]).to.contain(runs[0].commit_branch)
-    expect(stdout[2]).to.contain(runs[0].commit_sha)
-    expect(stdout[2]).to.contain(runs[0].status)
+    expect(stdout[0]).to.contain(runs[0].number)
+    expect(stdout[0]).to.contain(runs[0].commit_branch)
+    expect(stdout[0]).to.contain(runs[0].commit_sha)
+    expect(stdout[0]).to.contain(runs[0].status)
 
     api.done()
   })
