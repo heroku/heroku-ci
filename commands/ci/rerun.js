@@ -32,6 +32,7 @@ function* run (context, heroku) {
       commit_message: sourceTestRun.commit_message,
       commit_sha: sourceTestRun.commit_sha,
       pipeline: pipeline.id,
+      organization: sourceTestRun.organization.name,
       source_blob_url: sourceBlobUrl
     })
   }))
@@ -49,4 +50,3 @@ module.exports = {
   args: [{ name: 'number', optional: true }],
   run: cli.command(co.wrap(run))
 }
-
