@@ -28,7 +28,7 @@ function* run (context, heroku) {
 
   const coupling = yield api.pipelineCoupling(heroku, context.app)
 
-  const config = yield cli.action(
+  yield cli.action(
     `Setting ${Object.keys(vars).join(', ')}`,
     api.setConfigVars(heroku, coupling.pipeline.id, vars)
   )
