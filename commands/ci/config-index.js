@@ -1,5 +1,6 @@
 const cli = require('heroku-cli-util')
 const co = require('co')
+const shellescape = require('shell-escape')
 const api = require('../../lib/heroku-api')
 
 function* run (context, heroku) {
@@ -7,7 +8,9 @@ function* run (context, heroku) {
   const config = yield api.configVars(heroku, coupling.pipeline.id)
 
   if (context.flags.shell) {
-    Object.keys(config).forEach((key) => cli.log(`${key}=${config[key]}`))
+    Object.keys(config).forEach((key) => {
+      cli.log(`${key}=${shellescape([config[key]])}`)
+    })
   } else if (context.flags.json) {
     cli.styledJSON(config)
   } else {
