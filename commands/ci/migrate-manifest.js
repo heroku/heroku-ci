@@ -66,7 +66,7 @@ function* run (context, heroku) {
     showWarning()
   }
 
-  cli.log(`You should be all set now! 🎉`)
+  cli.log(`You're all set! 🎉`)
 }
 
 module.exports = {
@@ -80,6 +80,7 @@ module.exports = {
 $ heroku ci:migrate-manifest
 Writing app.json file... done
 Deleting app-ci.json file... done
-You should be all set now! 🎉. Please check the contents of your app.json before committing to your repo`,
+Please check the contents of your app.json before committing to your repo
+You're all set! 🎉.`,
   run: cli.command(co.wrap(run))
 }
