@@ -47,7 +47,8 @@ function* run (context, heroku) {
     command: context.flags['no-setup'] ? 'bash' : COMMAND,
     'exit-code': true,
     'no-tty': context.flags['no-tty'],
-    attach: true
+    attach: true,
+    env: 'HEROKU_SUPPRESS_LOGGING=true'
   })
 
   try {
