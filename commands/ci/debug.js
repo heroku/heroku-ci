@@ -49,6 +49,7 @@ function* run (context, heroku) {
     'no-tty': context.flags['no-tty'],
     attach: true,
     env: 'HEROKU_SUPPRESS_LOGGING=true',
+    size: context.flags.size,
     showStatus: false
   })
 
@@ -73,13 +74,24 @@ module.exports = {
   needsApp: true,
   needsAuth: true,
   description: 'opens an interactive test debugging session with the contents of the current directory',
-  help: ``,
+  help: `$ heroku ci:debug
+Preparing source... done
+Creating test run... done
+Running setup and attaching to test dyno...
+
+~ $
+`,
   flags: [
     {
       name: 'no-setup',
       hasValue: false,
       description: 'start test dyno without running test-setup'
-
+    },
+    {
+      name: 'size',
+      char: 's',
+      hasValue: true,
+      description: 'dyno size'
     }
   ],
   run: cli.command(co.wrap(run))
