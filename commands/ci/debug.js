@@ -48,11 +48,13 @@ function* run (context, heroku) {
     'exit-code': true,
     'no-tty': context.flags['no-tty'],
     attach: true,
-    env: 'HEROKU_SUPPRESS_LOGGING=true'
+    env: 'HEROKU_SUPPRESS_LOGGING=true',
+    showStatus: false
   })
 
   try {
-    yield dyno.start()
+    cli.log('Running setup and attaching to test dyno...')
+    dyno.start()
   } catch (err) {
     if (err.exitCode) cli.exit(err.exitCode, err)
     else throw err
