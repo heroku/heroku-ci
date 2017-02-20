@@ -6,6 +6,9 @@ const git = require('../../lib/git')
 const source = require('../../lib/source')
 const TestRun = require('../../lib/test-run')
 
+// Default command. Run setup, source profile.d scripts and open a bash session
+const COMMAND = 'sprettur setup && for f in .profile.d/*; do source $f; done && bash'
+
 function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipeline = coupling.pipeline
@@ -41,7 +44,7 @@ function* run (context, heroku) {
   const dyno = new Dyno({
     heroku,
     app: appSetup.app.id,
-    command: 'bash',
+    command: context.flags['no-setup'] ? 'bash' : COMMAND,
     'exit-code': true,
     'no-tty': context.flags['no-tty'],
     attach: true
@@ -68,5 +71,13 @@ module.exports = {
   needsAuth: true,
   description: 'opens an interactive test debugging session with the contents of the current directory',
   help: ``,
+  flags: [
+    {
+      name: 'no-setup',
+      hasValue: false,
+      description: 'start test dyno without running test-setup'
+
+    }
+  ],
   run: cli.command(co.wrap(run))
 }
