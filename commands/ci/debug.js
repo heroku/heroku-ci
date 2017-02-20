@@ -1,4 +1,5 @@
 const cli = require('heroku-cli-util')
+const Dyno = require('heroku-run').Dyno
 const co = require('co')
 const api = require('../../lib/heroku-api')
 const git = require('../../lib/git')
@@ -8,7 +9,6 @@ const TestRun = require('../../lib/test-run')
 function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipeline = coupling.pipeline
-
   const commit = yield git.readCommit('HEAD')
   const sourceBlobUrl = yield cli.action('Preparing source', co(function* () {
     return yield source.createSourceBlob(commit.ref, context, heroku)
@@ -18,26 +18,55 @@ function* run (context, heroku) {
   const organization = pipelineRepository.organization &&
                        pipelineRepository.organization.name
 
-  const testRun = yield cli.action('Starting test run', co(function* () {
+  let testRun = yield cli.action('Creating test run', co(function* () {
     return yield api.createTestRun(heroku, {
       commit_branch: commit.branch,
       commit_message: commit.message,
       commit_sha: commit.ref,
       pipeline: pipeline.id,
       organization,
-      source_blob_url: sourceBlobUrl
+      source_blob_url: sourceBlobUrl,
+      debug: true
     })
   }))
 
-  return yield TestRun.displayAndExit(pipeline, testRun.number, { heroku })
+  testRun = yield TestRun.waitForStates(['debugging', 'errored'], testRun, { heroku })
+
+  if (testRun.status === 'errored') {
+    cli.exit(1, `Test run creation failed whilst ${testRun.error_state} with message "${testRun.message}"`)
+  }
+
+  const appSetup = yield api.appSetup(heroku, testRun.app_setup.id)
+
+  const dyno = new Dyno({
+    heroku,
+    app: appSetup.app.id,
+    command: 'bash',
+    'exit-code': true,
+    'no-tty': context.flags['no-tty'],
+    attach: true
+  })
+
+  try {
+    yield dyno.start()
+  } catch (err) {
+    if (err.exitCode) cli.exit(err.exitCode, err)
+    else throw err
+  }
+
+  // TODO: uncomment when this endpoint is deployed
+  // yield cli.action(
+  //   'Cancelling test run',
+  //   api.updateTestRun(heroku, testRun.id, { status: 'cancelled' })
+  // )
 }
 
 module.exports = {
   topic: 'ci',
-  command: 'run',
+  command: 'debug',
   needsApp: true,
   needsAuth: true,
-  description: 'run tests against current directory',
-  help: 'uploads the contents of the current directory to Heroku and runs the tests',
+  description: 'opens an interactive test debugging session with the contents of the current directory',
+  help: ``,
   run: cli.command(co.wrap(run))
 }
