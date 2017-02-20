@@ -21,8 +21,9 @@ function* run (context, heroku) {
   const organization = pipelineRepository.organization &&
                        pipelineRepository.organization.name
 
-  let testRun = yield cli.action('Creating test run', co(function* () {
-    return yield api.createTestRun(heroku, {
+  // Create test run and wait for it to transition to `debugging`
+  const testRun = yield cli.action('Creating test run', co(function* () {
+    const run = yield api.createTestRun(heroku, {
       commit_branch: commit.branch,
       commit_message: commit.message,
       commit_sha: commit.ref,
@@ -31,9 +32,9 @@ function* run (context, heroku) {
       source_blob_url: sourceBlobUrl,
       debug: true
     })
-  }))
 
-  testRun = yield TestRun.waitForStates(['debugging', 'errored'], testRun, { heroku })
+    return yield TestRun.waitForStates(['debugging', 'errored'], run, { heroku })
+  }))
 
   if (testRun.status === 'errored') {
     cli.exit(1, `Test run creation failed whilst ${testRun.error_state} with message "${testRun.message}"`)
