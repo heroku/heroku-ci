@@ -7,7 +7,8 @@ const source = require('../../lib/source')
 const TestRun = require('../../lib/test-run')
 
 // Default command. Run setup, source profile.d scripts and open a bash session
-const COMMAND = 'sprettur setup && for f in .profile.d/*; do source $f; done && bash'
+const SETUP_COMMAND = 'sprettur setup && for f in .profile.d/*; do source $f; done'
+const COMMAND = `${SETUP_COMMAND} && bash`
 
 function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
@@ -41,11 +42,12 @@ function* run (context, heroku) {
   }
 
   const appSetup = yield api.appSetup(heroku, testRun.app_setup.id)
+  const noSetup = context.flags['no-setup']
 
   const dyno = new Dyno({
     heroku,
     app: appSetup.app.id,
-    command: context.flags['no-setup'] ? 'bash' : COMMAND,
+    command: noSetup ? 'bash' : COMMAND,
     'exit-code': true,
     'no-tty': context.flags['no-tty'],
     attach: true,
@@ -54,7 +56,13 @@ function* run (context, heroku) {
     showStatus: false
   })
 
-  cli.log(`${context.flags['no-setup'] ? 'Attaching' : 'Running setup and attaching'} to test dyno...`)
+  cli.log(`${noSetup ? 'Attaching' : 'Running setup and attaching'} to test dyno...`)
+
+  if (noSetup) {
+    cli.warn('Skipping test setup phase.')
+    cli.warn(`Run \`${SETUP_COMMAND}\``)
+    cli.warn('to execute a build and configure the environment')
+  }
 
   try {
     yield dyno.start()
@@ -65,7 +73,7 @@ function* run (context, heroku) {
 
   yield cli.action(
     'Cleaning up',
-    api.updateTestRun(heroku, id, {
+    api.updateTestRun(heroku, testRun.id, {
       status: 'cancelled',
       message: 'debug run cancelled by Heroku CLI'
     })
