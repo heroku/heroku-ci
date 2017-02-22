@@ -37,7 +37,7 @@ function* run (context, heroku) {
   }))
 
   if (testRun.status === 'errored') {
-    cli.exit(1, `Test run creation failed whilst ${testRun.error_state} with message "${testRun.message}"`)
+    cli.exit(1, `Test run creation failed while ${testRun.error_state} with message "${testRun.message}"`)
   }
 
   const appSetup = yield api.appSetup(heroku, testRun.app_setup.id)
@@ -54,8 +54,9 @@ function* run (context, heroku) {
     showStatus: false
   })
 
+  cli.log(`${context.flags['no-setup'] ? 'Attaching' : 'Running setup and attaching'} to test dyno...`)
+
   try {
-    cli.log('Running setup and attaching to test dyno...')
     dyno.start()
   } catch (err) {
     if (err.exitCode) cli.exit(err.exitCode, err)
