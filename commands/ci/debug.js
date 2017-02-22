@@ -12,14 +12,14 @@ const COMMAND = 'sprettur setup && for f in .profile.d/*; do source $f; done && 
 function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const pipeline = coupling.pipeline
+  const pipelineRepository = yield api.pipelineRepository(heroku, pipeline.id)
+  const organization = pipelineRepository.organization &&
+                       pipelineRepository.organization.name
+
   const commit = yield git.readCommit('HEAD')
   const sourceBlobUrl = yield cli.action('Preparing source', co(function* () {
     return yield source.createSourceBlob(commit.ref, context, heroku)
   }))
-
-  const pipelineRepository = yield api.pipelineRepository(heroku, pipeline.id)
-  const organization = pipelineRepository.organization &&
-                       pipelineRepository.organization.name
 
   // Create test run and wait for it to transition to `debugging`
   const testRun = yield cli.action('Creating test run', co(function* () {
