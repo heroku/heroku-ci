@@ -57,17 +57,19 @@ function* run (context, heroku) {
   cli.log(`${context.flags['no-setup'] ? 'Attaching' : 'Running setup and attaching'} to test dyno...`)
 
   try {
-    dyno.start()
+    yield dyno.start()
   } catch (err) {
     if (err.exitCode) cli.exit(err.exitCode, err)
     else throw err
   }
 
-  // TODO: uncomment when this endpoint is deployed
-  // yield cli.action(
-  //   'Cancelling test run',
-  //   api.updateTestRun(heroku, testRun.id, { status: 'cancelled' })
-  // )
+  yield cli.action(
+    'Cleaning up',
+    api.updateTestRun(heroku, id, {
+      status: 'cancelled',
+      message: 'debug run cancelled by Heroku CLI'
+    })
+  )
 }
 
 module.exports = {
