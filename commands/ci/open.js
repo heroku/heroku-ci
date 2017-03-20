@@ -1,15 +1,12 @@
 const cli = require('heroku-cli-util')
 const co = require('co')
-const opn = require('opn')
 const api = require('../../lib/heroku-api')
 
 function* run (context, heroku) {
   const coupling = yield api.pipelineCoupling(heroku, context.app)
   const couplingPipelineID = coupling.pipeline.id
 
-  opn(`https://dashboard.heroku.com/pipelines/${couplingPipelineID}/tests`)
-
-  return true
+  yield cli.open(`https://dashboard.heroku.com/pipelines/${couplingPipelineID}/tests`)
 }
 
 module.exports = {
