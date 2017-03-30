@@ -34,7 +34,8 @@ describe('heroku ci:last', function () {
     testNode = {
       output_stream_url: 'https://output.com/tests',
       setup_stream_url: 'https://output.com/setup',
-      test_run: { id: testRun.id }
+      test_run: { id: testRun.id },
+      exit_code: 1
     }
 
     setupOutput = ''
@@ -53,6 +54,8 @@ describe('heroku ci:last', function () {
       .reply(200, [testRun])
       .get(`/pipelines/${coupling.pipeline.id}/test-runs/${testRun.number}`)
       .reply(200, testRun)
+      .get(`/test-runs/${testRun.id}/test-nodes`)
+      .reply(200, [testNode])
       .get(`/test-runs/${testRun.id}/test-nodes`)
       .reply(200, [testNode])
 
