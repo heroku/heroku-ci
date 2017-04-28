@@ -11,7 +11,6 @@ function* run (context, heroku) {
 
 const cmd = {
   topic: 'ci',
-  default: true,
   needsApp: true,
   needsAuth: true,
   description: 'show the most recent runs',
