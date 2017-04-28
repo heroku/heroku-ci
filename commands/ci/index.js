@@ -30,5 +30,5 @@ const cmd = {
 
 module.exports = [
   cmd,
-  Object.assign({ command: 'list' }, cmd)
+  Object.assign({ command: 'list', hidden: true }, cmd)
 ]
