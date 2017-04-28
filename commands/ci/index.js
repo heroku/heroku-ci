@@ -9,9 +9,8 @@ function* run (context, heroku) {
   return yield RenderTestRuns.render(coupling.pipeline, { heroku, watch: context.flags.watch })
 }
 
-module.exports = {
+const cmd = {
   topic: 'ci',
-  command: 'list',
   default: true,
   needsApp: true,
   needsAuth: true,
@@ -28,3 +27,8 @@ module.exports = {
   ],
   run: cli.command(co.wrap(run))
 }
+
+module.exports = [
+  cmd,
+  Object.assign({ command: 'list' }, cmd)
+]
