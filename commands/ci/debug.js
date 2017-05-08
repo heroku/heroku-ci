@@ -11,8 +11,19 @@ const SETUP_COMMAND = 'ci setup && eval $(ci env)'
 const COMMAND = `${SETUP_COMMAND} && bash`
 
 function* run (context, heroku) {
-  const coupling = yield api.pipelineCoupling(heroku, context.app)
-  const pipeline = coupling.pipeline
+  let pipeline = context.flags.pipeline
+
+  let pipelineOrApp = pipeline || context.app
+
+  if (!pipelineOrApp) cli.exit(1, 'Required flag:  --pipeline PIPELINE or --app APP')
+
+  if (pipeline) {
+    pipeline = yield api.pipelineInfo(heroku, pipeline)
+  } else {
+    const coupling = yield api.pipelineCoupling(heroku, context.app)
+    pipeline = coupling.pipeline
+  }
+
   const pipelineRepository = yield api.pipelineRepository(heroku, pipeline.id)
   const organization = pipelineRepository.organization &&
                        pipelineRepository.organization.name
@@ -83,7 +94,7 @@ function* run (context, heroku) {
 module.exports = {
   topic: 'ci',
   command: 'debug',
-  needsApp: true,
+  wantsApp: true,
   needsAuth: true,
   description: 'opens an interactive test debugging session with the contents of the current directory',
   help: `$ heroku ci:debug
@@ -104,6 +115,12 @@ Running setup and attaching to test dyno...
       char: 's',
       hasValue: true,
       description: 'dyno size'
+    },
+    {
+      name: 'pipeline',
+      char: 'p',
+      hasValue: true,
+      description: 'pipeline'
     }
   ],
   run: cli.command(co.wrap(run))
