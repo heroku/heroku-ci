@@ -65,7 +65,7 @@ describe('heroku ci:last', function () {
       .get('/tests')
       .reply(200, testOutput)
 
-    yield cmd.run({ app })
+    yield cmd.run({ app, flags: [] })
     expect(cli.stdout).to.contain(`✓ #${testRun.number}`)
 
     api.done()
@@ -79,7 +79,7 @@ describe('heroku ci:last', function () {
       .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
       .reply(200, [])
 
-    yield cmd.run({ app })
+    yield cmd.run({ app, flags: [] })
     expect(cli.stderr).to.contain('No Heroku CI runs found')
     api.done()
   })

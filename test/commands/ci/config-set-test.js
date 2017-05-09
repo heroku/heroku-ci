@@ -29,7 +29,7 @@ describe('heroku ci:config:set', function () {
       .patch(`/pipelines/${coupling.pipeline.id}/stage/test/config-vars`)
       .reply(200, { [key]: value })
 
-    yield cmd.run({ app, args: [ `${key}=${value}` ] })
+    yield cmd.run({ app, args: [ `${key}=${value}` ], flags: [] })
 
     expect(cli.stdout).to.include(key)
     expect(cli.stdout).to.include(value)

@@ -5,24 +5,14 @@ const api = require('../../lib/heroku-api')
 const git = require('../../lib/git')
 const source = require('../../lib/source')
 const TestRun = require('../../lib/test-run')
+const Utils = require('../../lib/utils')
 
 // Default command. Run setup, source profile.d scripts and open a bash session
 const SETUP_COMMAND = 'ci setup && eval $(ci env)'
 const COMMAND = `${SETUP_COMMAND} && bash`
 
 function* run (context, heroku) {
-  let pipeline = context.flags.pipeline
-
-  let pipelineOrApp = pipeline || context.app
-
-  if (!pipelineOrApp) cli.exit(1, 'Required flag:  --pipeline PIPELINE or --app APP')
-
-  if (pipeline) {
-    pipeline = yield api.pipelineInfo(heroku, pipeline)
-  } else {
-    const coupling = yield api.pipelineCoupling(heroku, context.app)
-    pipeline = coupling.pipeline
-  }
+  const pipeline = Utils.getPipeline(context, heroku)
 
   const pipelineRepository = yield api.pipelineRepository(heroku, pipeline.id)
   const organization = pipelineRepository.organization &&

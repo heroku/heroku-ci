@@ -27,7 +27,7 @@ describe('heroku ci:config:unset', function () {
       .patch(`/pipelines/${coupling.pipeline.id}/stage/test/config-vars`)
       .reply(200, { [key]: null })
 
-    yield cmd.run({ app, args: [ key ] })
+    yield cmd.run({ app, args: [ key ], flags: [] })
 
     api.done()
   })
