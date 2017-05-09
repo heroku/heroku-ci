@@ -7,18 +7,11 @@ const cmd = require('../../../commands/ci')[0]
 const stdMocks = require('std-mocks')
 
 describe('heroku ci', function () {
-  let app, coupling, runs
+  let runs
 
   beforeEach(function () {
     cli.mockConsole()
-    app = '123-app'
 
-    coupling = {
-      pipeline: {
-        id: '123-abc',
-        name: 'test-pipeline'
-      }
-    }
     runs = [{
       number: 123,
       commit_branch: 'foo',
@@ -27,25 +20,73 @@ describe('heroku ci', function () {
     }]
   })
 
-  it('displays recent runs', function* () {
-    const api = nock('https://api.heroku.com')
-      .get(`/apps/${app}/pipeline-couplings`)
-      .reply(200, coupling)
-      .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
-      .reply(200, runs)
+  context('when given an application', function () {
+    let app, coupling
 
-    stdMocks.use()
+    beforeEach(function () {
+      app = '123-app'
 
-    yield cmd.run({ app, flags: {} })
+      coupling = {
+        pipeline: {
+          id: '123-abc',
+          name: 'test-pipeline'
+        }
+      }
+    })
 
-    stdMocks.restore()
-    const { stdout } = stdMocks.flush()
+    it('displays recent runs', function* () {
+      const api = nock('https://api.heroku.com')
+        .get(`/apps/${app}/pipeline-couplings`)
+        .reply(200, coupling)
+        .get(`/pipelines/${coupling.pipeline.id}/test-runs`)
+        .reply(200, runs)
 
-    expect(stdout[0]).to.contain(runs[0].number)
-    expect(stdout[0]).to.contain(runs[0].commit_branch)
-    expect(stdout[0]).to.contain(runs[0].commit_sha)
-    expect(stdout[0]).to.contain(runs[0].status)
+      stdMocks.use()
 
-    api.done()
+      yield cmd.run({ app, flags: {} })
+
+      stdMocks.restore()
+      const { stdout } = stdMocks.flush()
+
+      expect(stdout[0]).to.contain(runs[0].number)
+      expect(stdout[0]).to.contain(runs[0].commit_branch)
+      expect(stdout[0]).to.contain(runs[0].commit_sha)
+      expect(stdout[0]).to.contain(runs[0].status)
+
+      api.done()
+    })
+  })
+
+  context('when given a pipeline', function () {
+    let pipeline
+
+    beforeEach(function () {
+      pipeline = {
+        id: '123-abc',
+        name: 'test-pipeline'
+      }
+    })
+
+    it('displays recent runs', function* () {
+      const api = nock('https://api.heroku.com')
+        .get(`/pipelines/${pipeline.name}`)
+        .reply(200, pipeline)
+        .get(`/pipelines/${pipeline.id}/test-runs`)
+        .reply(200, runs)
+
+      stdMocks.use()
+
+      yield cmd.run({ flags: { pipeline: pipeline.name } })
+
+      stdMocks.restore()
+      const { stdout } = stdMocks.flush()
+
+      expect(stdout[0]).to.contain(runs[0].number)
+      expect(stdout[0]).to.contain(runs[0].commit_branch)
+      expect(stdout[0]).to.contain(runs[0].commit_sha)
+      expect(stdout[0]).to.contain(runs[0].status)
+
+      api.done()
+    })
   })
 })
