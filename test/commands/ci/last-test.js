@@ -5,6 +5,7 @@ const expect = require('chai').expect
 const cli = require('heroku-cli-util')
 const sinon = require('sinon')
 const cmd = require('../../../commands/ci/last')
+const Factory = require('../../lib/factory')
 
 describe('heroku ci:last', function () {
   let testRun, testNode, setupOutput, testOutput
@@ -98,17 +99,13 @@ describe('heroku ci:last', function () {
     let pipeline
 
     beforeEach(function () {
-      pipeline = {
-        id: '123-abc',
-        name: '123-abc'
-      }
-
+      pipeline = Factory.pipeline
       setup(pipeline)
     })
 
     it('with runs, displays the results of the latest run', function* () {
       const api = nock('https://api.heroku.com')
-        .get(`/pipelines/${pipeline.name}`)
+        .get(`/pipelines/${pipeline.id}`)
         .reply(200, pipeline)
         .get(`/pipelines/${pipeline.id}/test-runs`)
         .reply(200, [testRun])
@@ -125,7 +122,7 @@ describe('heroku ci:last', function () {
         .get('/tests')
         .reply(200, testOutput)
 
-      yield cmd.run({ flags: { pipeline: pipeline.name } })
+      yield cmd.run({ flags: { pipeline: pipeline.id } })
       expect(cli.stdout).to.contain(`✓ #${testRun.number}`)
 
       api.done()
@@ -134,12 +131,12 @@ describe('heroku ci:last', function () {
 
     it('without any runs, reports that there are no runs', function* () {
       let api = nock('https://api.heroku.com')
-        .get(`/pipelines/${pipeline.name}`)
+        .get(`/pipelines/${pipeline.id}`)
         .reply(200, pipeline)
         .get(`/pipelines/${pipeline.id}/test-runs`)
         .reply(200, [])
 
-      yield cmd.run({ flags: { pipeline: pipeline.name } })
+      yield cmd.run({ flags: { pipeline: pipeline.id } })
       expect(cli.stderr).to.contain('No Heroku CI runs found')
       api.done()
     })

@@ -5,6 +5,7 @@ const expect = require('chai').expect
 const cli = require('heroku-cli-util')
 const cmd = require('../../../commands/ci')[0]
 const stdMocks = require('std-mocks')
+const Factory = require('../../lib/factory')
 
 describe('heroku ci', function () {
   let runs
@@ -61,22 +62,19 @@ describe('heroku ci', function () {
     let pipeline
 
     beforeEach(function () {
-      pipeline = {
-        id: '123-abc',
-        name: 'test-pipeline'
-      }
+      pipeline = Factory.pipeline
     })
 
     it('displays recent runs', function* () {
       const api = nock('https://api.heroku.com')
-        .get(`/pipelines/${pipeline.name}`)
+        .get(`/pipelines/${pipeline.id}`)
         .reply(200, pipeline)
         .get(`/pipelines/${pipeline.id}/test-runs`)
         .reply(200, runs)
 
       stdMocks.use()
 
-      yield cmd.run({ flags: { pipeline: pipeline.name } })
+      yield cmd.run({ flags: { pipeline: pipeline.id } })
 
       stdMocks.restore()
       const { stdout } = stdMocks.flush()
