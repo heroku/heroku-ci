@@ -23,20 +23,6 @@ describe('heroku-api', function () {
     })
   })
 
-  describe('#pipelineInfo', function () {
-    it('gets the pipeline information given a pipeline name', function* () {
-      const pipelineName = 'sausages'
-      const pipeline = { id: '123-abc', pipelineName }
-      const api = nock(`https://api.heroku.com`)
-        .get(`/pipelines/${pipelineName}`)
-        .reply(200, pipeline)
-
-      const response = yield herokuAPI.pipelineInfo(new Heroku(), pipelineName)
-      expect(response).to.deep.eq(pipeline)
-      api.done()
-    })
-  })
-
   describe('#pipelineRepository', function () {
     it('gets the pipeline repository given a pipeline', function* () {
       const pipeline = '123-abc'
