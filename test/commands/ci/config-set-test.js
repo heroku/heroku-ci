@@ -7,64 +7,27 @@ const cmd = require('../../../commands/ci/config-set')
 const Factory = require('../../lib/factory')
 
 describe('heroku ci:config:set', function () {
-  let key, value
+  let key, pipeline, value
 
   beforeEach(function () {
     cli.mockConsole()
     key = 'FOO'
     value = 'bar'
+    pipeline = Factory.pipeline
   })
 
-  context('when given an application', function () {
-    let app, coupling
+  it('sets new config', function* () {
+    const api = nock('https://api.heroku.com')
+      .get(`/pipelines/${pipeline.id}`)
+      .reply(200, pipeline)
+      .patch(`/pipelines/${pipeline.id}/stage/test/config-vars`)
+      .reply(200, { [key]: value })
 
-    beforeEach(function () {
-      app = '123-app'
+    yield cmd.run({ args: [ `${key}=${value}` ], flags: { pipeline: pipeline.id } })
 
-      coupling = {
-        pipeline: {
-          id: '123-abc',
-          name: 'test-pipeline'
-        }
-      }
-    })
+    expect(cli.stdout).to.include(key)
+    expect(cli.stdout).to.include(value)
 
-    it('sets new config', function* () {
-      const api = nock('https://api.heroku.com')
-        .get(`/apps/${app}/pipeline-couplings`)
-        .reply(200, coupling)
-        .patch(`/pipelines/${coupling.pipeline.id}/stage/test/config-vars`)
-        .reply(200, { [key]: value })
-
-      yield cmd.run({ app, args: [ `${key}=${value}` ], flags: {} })
-
-      expect(cli.stdout).to.include(key)
-      expect(cli.stdout).to.include(value)
-
-      api.done()
-    })
-  })
-
-  context('when given a pipeline', function () {
-    let pipeline
-
-    beforeEach(function () {
-      pipeline = Factory.pipeline
-    })
-
-    it('sets new config', function* () {
-      const api = nock('https://api.heroku.com')
-        .get(`/pipelines/${pipeline.id}`)
-        .reply(200, pipeline)
-        .patch(`/pipelines/${pipeline.id}/stage/test/config-vars`)
-        .reply(200, { [key]: value })
-
-      yield cmd.run({ args: [ `${key}=${value}` ], flags: { pipeline: pipeline.id } })
-
-      expect(cli.stdout).to.include(key)
-      expect(cli.stdout).to.include(value)
-
-      api.done()
-    })
+    api.done()
   })
 })

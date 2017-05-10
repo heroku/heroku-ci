@@ -6,7 +6,7 @@ const Heroku = require('heroku-client')
 const Utils = require('../../lib/utils')
 const Factory = require('./factory')
 
-describe.only('Utils', function () {
+describe('Utils', function () {
   afterEach(() => nock.cleanAll())
 
   describe('#getPipeline', function () {
