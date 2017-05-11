@@ -5,7 +5,7 @@ The CLI plugin for Heroku CI
 
 ## Installation
 
-This plugin is part of the official Heroku CLI, so there is no need to install it run their commands.
+This plugin is part of the official Heroku CLI, so there is no need to install it to run their commands.
 
 ## Development
 
