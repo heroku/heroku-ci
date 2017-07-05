@@ -56,7 +56,15 @@ function* run (context, heroku) {
 
   const env = Object.keys(configVars).map((key) => `${key}=${configVars[key]}`).join(';')
 
-  const dyno = new Dyno({
+  cli.log(`${noSetup ? 'Attaching' : 'Running setup and attaching'} to test dyno...`)
+
+  if (noSetup) {
+    cli.warn('Skipping test setup phase.')
+    cli.warn(`Run \`${SETUP_COMMAND}\``)
+    cli.warn('to execute a build and configure the environment')
+  }
+
+  let dyno = new Dyno({
     heroku,
     app: appSetup.app.id,
     command: noSetup ? 'bash' : COMMAND,
@@ -68,19 +76,13 @@ function* run (context, heroku) {
     showStatus: false
   })
 
-  cli.log(`${noSetup ? 'Attaching' : 'Running setup and attaching'} to test dyno...`)
+  const testNodes = yield api.testNodes(heroku, testRun.id)
 
-  if (noSetup) {
-    cli.warn('Skipping test setup phase.')
-    cli.warn(`Run \`${SETUP_COMMAND}\``)
-    cli.warn('to execute a build and configure the environment')
-  }
-
-  try {
+  if (testNodes[0].attach_url) {
+    dyno.attach_url = testNodes[0].attach_url
+    yield dyno.attach()
+  } else {
     yield dyno.start()
-  } catch (err) {
-    if (err.exitCode) cli.exit(err.exitCode, err)
-    else throw err
   }
 
   yield cli.action(
