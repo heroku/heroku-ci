@@ -64,25 +64,48 @@ function* run (context, heroku) {
     cli.warn('to execute a build and configure the environment')
   }
 
-  let dyno = new Dyno({
-    heroku,
-    app: appSetup.app.id,
-    command: noSetup ? 'bash' : COMMAND,
-    'exit-code': true,
-    'no-tty': context.flags['no-tty'],
-    attach: true,
-    env,
-    size: context.flags.size,
-    showStatus: false
-  })
+  const testNode = yield api.testNodes(heroku, testRun.id)[0]
 
-  const testNodes = yield api.testNodes(heroku, testRun.id)
+  let dyno
 
-  if (testNodes[0].attach_url) {
-    dyno.attach_url = testNodes[0].attach_url
-    yield dyno.attach()
+  if (testNode && testNode.dyno && testNode.dyno.id) {
+    const testRunDyno = yield api.getDyno(heroku, appSetup.app.id, testNode.dyno.id)
+
+    dyno = new Dyno({
+      heroku,
+      app: appSetup.app.id,
+      command: noSetup ? 'bash' : COMMAND, // need to check how to do this properly
+      'exit-code': true,
+      attach: true,
+      env,
+      showStatus: false
+    })
+
+    dyno.attach_url = testRunDyno.attach_url
+
+    try {
+      yield dyno.attach()
+    } catch (err) {
+      if (err.exitCode) cli.exit(err.exitCode, err)
+      else throw err
+    }
   } else {
-    yield dyno.start()
+    dyno = new Dyno({
+      heroku,
+      app: appSetup.app.id,
+      command: noSetup ? 'bash' : COMMAND,
+      'exit-code': true,
+      attach: true,
+      env,
+      showStatus: false
+    })
+
+    try {
+      yield dyno.start()
+    } catch (err) {
+      if (err.exitCode) cli.exit(err.exitCode, err)
+      else throw err
+    }
   }
 
   yield cli.action(
@@ -114,12 +137,6 @@ module.exports = {
       name: 'no-setup',
       hasValue: false,
       description: 'start test dyno without running test-setup'
-    },
-    {
-      name: 'size',
-      char: 's',
-      hasValue: true,
-      description: 'dyno size'
     },
     {
       name: 'pipeline',
