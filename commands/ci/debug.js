@@ -64,48 +64,34 @@ function* run (context, heroku) {
     cli.warn('to execute a build and configure the environment')
   }
 
-  const testNode = yield api.testNodes(heroku, testRun.id)[0]
+  const testNodes = yield api.testNodes(heroku, testRun.id)
+  const dynoID = Utils.dig(testNodes, 0, 'dyno', 'id')
 
-  let dyno
+  const dyno = new Dyno({
+    heroku,
+    app: appSetup.app.id,
+    command: 'bash',
+    'exit-code': true,
+    attach: true,
+    env,
+    showStatus: false
+  })
 
-  if (testNode && testNode.dyno && testNode.dyno.id) {
-    const testRunDyno = yield api.getDyno(heroku, appSetup.app.id, testNode.dyno.id)
-
-    dyno = new Dyno({
-      heroku,
-      app: appSetup.app.id,
-      command: noSetup ? 'bash' : COMMAND, // need to check how to do this properly
-      'exit-code': true,
-      attach: true,
-      env,
-      showStatus: false
-    })
-
-    dyno.attach_url = testRunDyno.attach_url
-
-    try {
-      yield dyno.attach()
-    } catch (err) {
-      if (err.exitCode) cli.exit(err.exitCode, err)
-      else throw err
-    }
+  let dynoPromise
+  if (dynoID) {
+    dyno.attach_url = (
+      yield api.getDyno(heroku, appSetup.app.id, testNode.dyno.id)
+    ).attach_url
+    dynoPromise = dyno.attach()
   } else {
-    dyno = new Dyno({
-      heroku,
-      app: appSetup.app.id,
-      command: noSetup ? 'bash' : COMMAND,
-      'exit-code': true,
-      attach: true,
-      env,
-      showStatus: false
-    })
+    dynoPromise = dyno.start()
+  }
 
-    try {
-      yield dyno.start()
-    } catch (err) {
-      if (err.exitCode) cli.exit(err.exitCode, err)
-      else throw err
-    }
+  try {
+    yield dynoPromise
+  } catch (err) {
+    if (err.exitCode) cli.exit(err.exitCode, err)
+    else throw err
   }
 
   yield cli.action(
