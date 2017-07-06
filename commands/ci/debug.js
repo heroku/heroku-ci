@@ -28,10 +28,11 @@ function* run (context, heroku) {
       commit_branch: commit.branch,
       commit_message: commit.message,
       commit_sha: commit.ref,
-      pipeline: pipeline.id,
+      debug: true,
+      clear_cache: !!context.flags['no-cache'],
       organization,
-      source_blob_url: sourceBlobUrl,
-      debug: true
+      pipeline: pipeline.id,
+      source_blob_url: sourceBlobUrl
     })
 
     return yield TestRun.waitForStates(['debugging', 'errored'], run, { heroku })
@@ -139,6 +140,11 @@ module.exports = {
       char: 'p',
       hasValue: true,
       description: 'pipeline'
+    },
+    {
+      name: 'no-cache',
+      hasValue: false,
+      description: 'start test run with an empty cache'
     }
   ],
   run: cli.command(co.wrap(run))
