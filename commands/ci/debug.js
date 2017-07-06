@@ -9,7 +9,6 @@ const Utils = require('../../lib/utils')
 
 // Default command. Run setup, source profile.d scripts and open a bash session
 const SETUP_COMMAND = 'ci setup && eval $(ci env)'
-const COMMAND = `${SETUP_COMMAND} && bash`
 
 function* run (context, heroku) {
   const pipeline = yield Utils.getPipeline(context, heroku)
@@ -85,6 +84,16 @@ function* run (context, heroku) {
     dynoPromise = dyno.attach()
   } else {
     dynoPromise = dyno.start()
+  }
+
+  if (!noSetup) {
+    function sendSetup (data, connection) {
+      if (data.toString().includes('$')) {
+        dyno.write(SETUP_COMMAND + '\n')
+        dyno.removeListener('data', sendSetup)
+      }
+    }
+    dyno.on('data', sendSetup)
   }
 
   try {
