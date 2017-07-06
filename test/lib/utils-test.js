@@ -38,24 +38,24 @@ describe('Utils', function () {
     })
   })
 
-  describe('#dig', function() {
-    it('is undefined given an undefined object', function() {
+  describe('#dig', function () {
+    it('is undefined given an undefined object', function () {
       expect(Utils.dig(undefined)).to.be.undefined
-    });
+    })
 
-    it('deep gets into an object', function() {
+    it('deep gets into an object', function () {
       const obj = { foo: { bar: 'baz' } }
       expect(Utils.dig(obj, 'foo', 'bar')).to.eq('baz')
-    });
+    })
 
-    it('deep gets into an array', function() {
+    it('deep gets into an array', function () {
       const array = [{ foo: { bar: 'baz' } }]
       expect(Utils.dig(array, 0, 'foo', 'bar')).to.eq('baz')
-    });
+    })
 
-    it('returns undefined if the path is not present', function() {
+    it('returns undefined if the path is not present', function () {
       const obj = { foo: { bar: 'baz' } }
       expect(Utils.dig(obj, 'foo', 'quz')).to.be.undefined
-    });
-  });
+    })
+  })
 })

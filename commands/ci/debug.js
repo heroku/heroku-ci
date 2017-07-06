@@ -79,20 +79,21 @@ function* run (context, heroku) {
   let dynoPromise
   if (dynoID) {
     dyno.attach_url = (
-      yield api.getDyno(heroku, appSetup.app.id, testNode.dyno.id)
+      yield api.getDyno(heroku, appSetup.app.id, dynoID)
     ).attach_url
     dynoPromise = dyno.attach()
   } else {
     dynoPromise = dyno.start()
   }
 
-  if (!noSetup) {
-    function sendSetup (data, connection) {
-      if (data.toString().includes('$')) {
-        dyno.write(SETUP_COMMAND + '\n')
-        dyno.removeListener('data', sendSetup)
-      }
+  function sendSetup (data, connection) {
+    if (data.toString().includes('$')) {
+      dyno.write(SETUP_COMMAND + '\n')
+      dyno.removeListener('data', sendSetup)
     }
+  }
+
+  if (!noSetup) {
     dyno.on('data', sendSetup)
   }
 
