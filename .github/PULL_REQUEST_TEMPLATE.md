@@ -9,7 +9,7 @@ The checklist enumerates the tasks you set out to do before the PR becomes ready
 - [x] Implement feature
 - [ ] Write tests
 - [ ] Update yarn.lock
-- [ ] Update [CHANGELOG.md]()
+- [ ] Update [CHANGELOG.md](https://github.com/heroku/heroku-ci/blob/master/CHANGELOG.md)
 - [ ] Update Dev Center Docs
 - [ ] Publish a new entry to [Heroku Changelog](https://devcenter.heroku.com/changelog)
 
