@@ -29,6 +29,7 @@ const cmd = {
     },
     {
       name: 'json',
+      char: 'j',
       hasValue: false,
       description: 'output run info in json format'
     }
