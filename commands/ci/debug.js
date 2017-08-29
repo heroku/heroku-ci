@@ -88,7 +88,7 @@ module.exports = {
   needsAuth: true,
   description: 'opens an interactive test debugging session with the contents of the current directory',
   help: `Example:
-	
+
 	  $ heroku ci:debug
     Preparing source... done
     Creating test run... done

@@ -23,7 +23,10 @@ const cmd = {
 
     }
   ],
-  run: cli.command(co.wrap(run))
+  run: cli.command(co.wrap(run)),
+  help: `Example:
+
+    $ heroku ci --app murmuring-headland-14719`
 }
 
 module.exports = [
