@@ -36,7 +36,10 @@ const cmd = {
       description: 'output run info in json format'
     }
   ],
-  run: cli.command(co.wrap(run))
+  run: cli.command(co.wrap(run)),
+  help: `Example:
+
+    $ heroku ci --app murmuring-headland-14719`
 }
 
 module.exports = [
