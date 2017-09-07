@@ -33,6 +33,7 @@
   "dependencies": {
     "ansi-escapes": "1.4.0",
     "bluebird": "^3.4.6",
+    "cli-engine-heroku": "^3.0.2",
     "co": "^4.6.0",
     "co-wait": "0.0.0",
     "github-url-to-object": "^2.2.6",
