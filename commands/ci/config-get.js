@@ -42,7 +42,7 @@ module.exports = {
       char: 'p',
       hasValue: true,
       description: 'pipeline',
-      completion: PipelineCompletion,
+      completion: PipelineCompletion
     }
   ],
   run: cli.command(co.wrap(run))
