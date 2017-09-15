@@ -14,7 +14,6 @@ const cmd = {
   wantsApp: true,
   needsAuth: true,
   description: 'show the most recent runs',
-  help: 'display the most recent CI runs for the given pipeline',
   flags: [
     {
       name: 'pipeline',
@@ -37,7 +36,9 @@ const cmd = {
     }
   ],
   run: cli.command(co.wrap(run)),
-  help: `Example:
+  help: `display the most recent CI runs for the given pipeline
+
+  Example:
 
     $ heroku ci --app murmuring-headland-14719`
 }
