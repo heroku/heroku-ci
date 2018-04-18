@@ -7,6 +7,7 @@
     "url": "https://github.com/heroku/heroku-ci/issues"
   },
   "dependencies": {
+    "@heroku-cli/command": "^8.0.5",
     "ansi-escapes": "3.1.0",
     "bluebird": "^3.5.1",
     "cli-engine-heroku": "^5.0.4",

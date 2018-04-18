@@ -15,7 +15,7 @@
     strip-ansi "^4.0.0"
     supports-color "^5.1.0"
 
-"@heroku-cli/command@^8.0.4":
+"@heroku-cli/command@^8.0.4", "@heroku-cli/command@^8.0.5":
   version "8.0.5"
   resolved "https://registry.yarnpkg.com/@heroku-cli/command/-/command-8.0.5.tgz#eb7e596c5a17557339f227e058fa700d4c0821e6"
   dependencies:
