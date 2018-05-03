@@ -1,15 +1,15 @@
 {
   "name": "@heroku-cli/plugin-ci",
   "description": "Heroku CLI plugin for Heroku CI",
-  "version": "1.9.10",
+  "version": "1.9.11",
   "author": "Andrew Appleton, Gudmundur Bjarni Olafsson, Max Beizer, Ransom Briggs",
   "bugs": {
     "url": "https://github.com/heroku/heroku-ci/issues"
   },
   "dependencies": {
     "@heroku-cli/command": "^8.0.5",
-    "@heroku-cli/plugin-pipelines": "^2.5.4",
-    "@heroku-cli/plugin-run": "^3.6.0",
+    "@heroku-cli/plugin-pipelines": "^2.5.8",
+    "@heroku-cli/plugin-run": "^3.6.1",
     "ansi-escapes": "3.1.0",
     "bluebird": "^3.5.1",
     "co": "^4.6.0",
